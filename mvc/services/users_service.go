@@ -1,10 +1,10 @@
 package services
 
 import (
-	"github.com/andrewcathcart/go-microservices/mvc/models"
+	"github.com/andrewcathcart/go-microservices/mvc/domain"
 	"github.com/andrewcathcart/go-microservices/mvc/utils"
 )
 
-func GetUser(userID int64) (*models.User, *utils.ApplicationError) {
-	return models.GetUser(userID)
+func GetUser(userID int64) (*domain.User, *utils.ApplicationError) {
+	return domain.GetUser(userID)
 }
