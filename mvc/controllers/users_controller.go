@@ -1,18 +1,17 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/andrewcathcart/go-microservices/mvc/services"
 	"github.com/andrewcathcart/go-microservices/mvc/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // GetUser returns a User with the userID matching the user_id query param from the URL
-func GetUser(res http.ResponseWriter, req *http.Request) {
-	// get userID from query params
-	userID, err := strconv.ParseInt(req.URL.Query().Get("user_id"), 10, 64)
+func GetUser(c *gin.Context) {
+	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		apiErr := &utils.ApplicationError{
 			Message:    "user_id must be a number",
@@ -20,20 +19,15 @@ func GetUser(res http.ResponseWriter, req *http.Request) {
 			Code:       "bad_request",
 		}
 
-		jsonValue, _ := json.Marshal(apiErr)
-		res.WriteHeader(apiErr.StatusCode)
-		res.Write(jsonValue)
+		utils.RespondError(c, apiErr)
 		return
 	}
 
 	user, apiErr := services.UsersService.GetUser(userID)
 	if apiErr != nil {
-		jsonValue, _ := json.Marshal(apiErr)
-		res.WriteHeader(apiErr.StatusCode)
-		res.Write(jsonValue)
+		utils.RespondError(c, apiErr)
 		return
 	}
 
-	jsonValue, _ := json.Marshal(user)
-	res.Write(jsonValue)
+	utils.Respond(c, http.StatusOK, user)
 }
